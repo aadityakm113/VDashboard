@@ -1,24 +1,18 @@
 from flask import Flask
-from flask_pymongo import PyMongo
 import pymongo
 import json
 from pymongo import MongoClient, InsertOne
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
 
 app=Flask(__name__)
-app.config["MONGO_URI"]="mongodb+srv://chalasanisiddarth:var1sid2@dashboard.vitz1t0.mongodb.net/?retryWrites=true&w=majority"
-
-
-mongodb_client=PyMongo(app)
-db=mongodb_client.db
-collection=db.getCollection("COLLECTION");
-requesting=[]
-
-with open(r"jsondata.json") as f:
-    for jsonObj in f:
-        myDict = json.loads(jsonObj)
-        requesting.append(InsertOne(myDict))
-
-result = collection.bulk_write(requesting)
-
+uri = "mongodb+srv://chalasanisiddarth:var1sid2@dashboard.vitz1t0.mongodb.net/?retryWrites=true&w=majority&appName=Dashboard"
+client = MongoClient(uri, server_api=ServerApi('1'))
+db=client['Dashboard']
+try:
+    client.admin.command('ping')
+    print("Pinged your deployment. You successfully connected to MongoDB!")
+except Exception as e:
+    print(e)
 
 from application import routes
