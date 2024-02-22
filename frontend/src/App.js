@@ -1,5 +1,6 @@
 import {useState,useEffect} from 'react';
 import './App.css';
+import Filter from './Components/filter/Filter';
 
 function App() {
   const [data,setData]= useState({})
@@ -23,8 +24,16 @@ function App() {
   };
   return (
     <div className="App">
-      <h1>VDashboard</h1>
-      <p></p>
+      <Filter className="column-20"></Filter>
+      <div className='column-80'>
+        <div className='chart'>Chart</div>
+        <div className='chart'>Chart</div>
+        <div className='chart'>Chart</div>
+        <div className='chart'>Chart</div>
+        <div className='chart'>Chart</div>
+        <div className='chart'>Chart</div>
+        <div className='chart'>Chart</div>
+      </div>
     </div>
   );
 }
