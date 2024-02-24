@@ -53,13 +53,18 @@ function App() {
     //   </div>
     // </div>
     <div className="App">
-      <h1>VDashboard</h1>
+      {/* <h1>VDashboard</h1>
       {error ? (
         <p>Error fetching data: {error}</p>
       ) : (
         <p>End Year: {data.end_year}</p>  
-      )}
-      <WorldMap data={world} width={800} height={500}/>  
+      )} */}
+      <Filter className="column-20"></Filter>
+      <div className='column-80'>
+        <WorldMap data={world} width={800} height={500}/>
+        <div className='chart'>Chart</div>
+        <div className='chart'>Chart</div>
+      </div>  
     </div>
   );
 }

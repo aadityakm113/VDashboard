@@ -77,6 +77,7 @@ const WorldMap = ({ width, height }) => {
         .attr('text-anchor', 'middle')
         .attr('alignment-baseline', 'middle')
         .attr('fill', 'black')
+        .attr('font-size', '12px') 
         .text(d => d.country);
     });
   }, [world, width, height]);
