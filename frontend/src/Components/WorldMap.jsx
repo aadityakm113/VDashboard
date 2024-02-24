@@ -2,24 +2,26 @@ import React, { useRef, useEffect, useState } from 'react';
 import * as d3 from 'd3';
 import * as topojson from 'topojson-client';
 
-const WorldMap = ({ width, height }) => {
+const WorldMap = ({ width, height, filter}) => {
   const svgRef = useRef();
   const [world, setWorld] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchWorld();
-  }, []);
+    fetchWorld(filter);
+  }, [filter]);
 
-  const fetchWorld = async () => {
+  const fetchWorld = async (filter) => {
     try {
       const flag = "country"; // Or any other value you want to pass
+      console.log(filter);
       const response = await fetch(`/countries/${flag}`);
       if (!response.ok) {
         throw new Error('Failed to fetch data');
       }
       const jsonData = await response.json();
       setWorld(jsonData);
+      console.log(jsonData);
     } catch (error) {
       setError('Failed to fetch data');
       console.error('Error fetching data:', error);

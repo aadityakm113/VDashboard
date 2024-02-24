@@ -2,7 +2,7 @@ import React from "react";
 import { useState } from "react";
 import "./filter.css";
 
-const Filter = () =>{
+const Filter = ({chooseFilter}) =>{
     const [filters, setFilters] = useState({
         category: '',
         price: '',
@@ -10,7 +10,9 @@ const Filter = () =>{
       });
     
       const handleCategoryChange = (event) => {
-        setFilters({ ...filters, category: event.target.value });
+        var filter = event.target.value;
+        setFilters({ ...filters, category: filter });
+        chooseFilter(filter);
       };
     
       const handlePriceChange = (event) => {
