@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import "./filter.css";
 
 const Filter = ({chooseFilter, scroll}) =>{
-      const [open,setOpen] = useState(false);
       const [filters, setFilters] = useState({
         category: '',
         value: ''
@@ -12,13 +11,12 @@ const Filter = ({chooseFilter, scroll}) =>{
       const [error, setError] = useState(null);
 
       const handleCategoryChange = (event) => {
-        var filter = event.target.value;
-        setFilters({ ...filters, category: filter });
-        chooseFilter(filter);
+        setFilters({ ...filters, category: event.target.value });
+        chooseFilter(event.target.value);
       };
     
       const handleValueChange = (event) => {
-        setFilters({ ...filters, price: event.target.value });
+        setFilters({ ...filters, value: event.target.value });
       };
 
       useEffect(() => {
@@ -27,7 +25,7 @@ const Filter = ({chooseFilter, scroll}) =>{
 
       const fetchValues = async () => {
         try {
-          const flag = filters.category; // Or any other value you want to pass
+          const flag = filters.category.toLowerCase(); // Or any other value you want to pass
           const response = await fetch(`/filter/${flag}`);
           if (!response.ok) {
             throw new Error('Failed to fetch data');
@@ -56,11 +54,11 @@ const Filter = ({chooseFilter, scroll}) =>{
         </div>
         <div className="filter-section">
           <label htmlFor="value">Value:</label>
-          <input list="values" id="value" onChange={handleValueChange}/>
+          <input list="values" id="value" onChange={handleValueChange} value={filters.value}/>
           <datalist id="values">
             <option value="">Select</option>
                 {values && values.map((option, index) => (
-                  <option key={index} value={option[filters.category]}>{option[filters.category]}</option>
+                  <option key={index} value={option[(filters.category).toLowerCase()]}>{option[(filters.category).toLowerCase()]}</option>
                 ))}
           </datalist>
           {/* <select id="price" onChange={handleValueChange}>

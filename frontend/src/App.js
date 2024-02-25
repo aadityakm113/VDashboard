@@ -4,6 +4,9 @@ import Filter from './Components/filter/Filter';
 import WorldMap from './Components/WorldMap';
 import Bar from './Components/Bar';
 import Line from './Components/Line';
+import PieChart from './Components/PieChart';
+import RadarChart from './Components/RadarChart';
+import ScatterPlot from './Components/ScatterPlot';
 
 function App() {
   const [filter,setFilter] = useState("default");
@@ -59,7 +62,7 @@ function App() {
               <Line filter={filter} width={400} height={250}/>
               </div>
               <div className='chart'>
-              <Bar filter={filter} width={400} height={250}/>
+              <PieChart filter={filter} width={400} height={250}/>
               </div>
             </div>
             </div>
@@ -69,10 +72,10 @@ function App() {
             <h2>Sector</h2>
         <div className='section'>
           <div className='chart'>
-          <Line filter={filter} width={400} height={250}/>
+          <RadarChart filter={filter} width={400} height={250}/>
           </div>
           <div className='chart'>
-          <Bar filter={filter} width={400} height={250}/>
+          <ScatterPlot filter={filter} width={400} height={250}/>
           </div>
           <div className='chart'>
           <Line filter={filter} width={400} height={250}/>

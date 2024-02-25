@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import * as d3 from 'd3';
 
-const Bar = ({ width, height }) => {
+const HorizontalBar = ({ width, height }) => {
   const svgRef = useRef();
   const [bar, setBar] = useState([]);
   const [error, setError] = useState(null);
@@ -37,41 +37,43 @@ const Bar = ({ width, height }) => {
     const innerWidth = width - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
 
-    const x = d3.scaleBand()
+    const y = d3.scaleBand()
       .domain(bar.map(d => d.country))
-      .range([0, innerWidth])
+      .range([0, innerHeight])
       .padding(0.1);
 
-    const y = d3.scaleLinear()
+    const x = d3.scaleLinear()
       .domain([0, d3.max(bar, d => d.frequency)])
-      .range([innerHeight, 0]);
+      .range([0, innerWidth]);
 
     const xAxis = d3.axisBottom(x);
     const yAxis = d3.axisLeft(y);
 
     svg.append('g')
-      .attr('transform', `translate(${margin.left},${margin.top})`)
-      .call(yAxis);
+      .attr('transform', `translate(${margin.left},${margin.top + innerHeight})`)
+      .call(xAxis);
 
     svg.append('g')
-      .attr('transform', `translate(${margin.left},${innerHeight + margin.top})`)
-      .call(xAxis);
+      .attr('transform', `translate(${margin.left},${margin.top})`)
+      .call(yAxis);
 
     svg.selectAll('.bar')
       .data(bar)
       .enter().append('rect')
       .attr('class', 'bar')
-      .attr('x', d => x(d.country) + margin.left)
-      .attr('y', d => y(d.frequency) + margin.top)
-      .attr('width', x.bandwidth())
-      .attr('height', d => innerHeight - y(d.frequency))
-      .attr('fill', 'steelblue');
+      .attr('x', margin.left) // Start from the left margin
+      .attr('y', d => y(d.country) + margin.top) // Position the bars using the y scale
+      .attr('width', d => x(d.frequency)) // Width of the bar based on the frequency
+      .attr('height', y.bandwidth()) // Height of the bar based on the bandwidth of the y scale
+      .attr('fill', 'turquoise');
   }, [bar, width, height]);
 
-  return <svg ref={svgRef} width={width} height={height}>
-    <g className="x-axis" />
-    <g className="y-axis" />
-  </svg>;
+  return (
+    <svg ref={svgRef} width={width} height={height}>
+      <g className="x-axis" />
+      <g className="y-axis" />
+    </svg>
+  );
 };
 
-export default Bar;
+export default HorizontalBar;
