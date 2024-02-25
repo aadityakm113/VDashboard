@@ -2,25 +2,37 @@
   display: grid;
   height: 100vh;
   align-items: center;
-  grid-template-columns: 20% 80%;
+  grid-template-columns: 25% 75%;
 }
 
-.column-20 {
-  flex: 0 0 20%; /* flex-grow, flex-shrink, flex-basis */
+.column-25 {
+  flex: 0 0 25%; /* flex-grow, flex-shrink, flex-basis */
   height: 100vh;
 }
 
-.column-80 {
-  flex: 0 0 80%;
+.column-75 {
+  flex: 0 0 75%;
   height: 100vh;
   overflow: scroll;
-  background-color: black;
+  background-color: rgb(224, 224, 224);
+  padding: 0px 10px 10px 35px;
+}
+
+.section{
+  display: grid;
+  grid-template-columns: 50% 50%;
 }
 
 .chart{
-  width: 400px;
-  height: 350px;
-  background-color: azure;
+  width: fit-content;
+  height: fit-content;
+  background-color: white;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  margin-bottom: 2%;
+  flex: 0 0 50%;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
-
 

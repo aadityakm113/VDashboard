@@ -34,7 +34,7 @@ const WorldMap = ({ width, height, filter}) => {
     const svg = d3.select(svgRef.current);
 
     // Set up dimensions
-    const margin = { top: 20, right: 20, bottom: 20, left: 20 };
+    const margin = { top: 10, right: 10, bottom: 1, left: 10 };
     const chartWidth = width - margin.left - margin.right;
     const chartHeight = height - margin.top - margin.bottom;
 

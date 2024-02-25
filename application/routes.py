@@ -54,10 +54,9 @@ def world():
     return jsonify(data)
 
 @app.route('/no_of_articles/<flag1>/<flag2>')
+#no of articles in a country or region
 def no_of_articles(flag1,flag2):
-    # match_field = 'country' if flag1 == "country" else 'region' if flag1 == "region" else 'source'
     match_field = 'country' if flag1 == "country" else 'region' if flag1 == "region" else 'source' if flag1 == "source" else 'source'
-    # Define the pipeline
     pipeline = [
         {
             '$match': {
@@ -81,25 +80,152 @@ def no_of_articles(flag1,flag2):
     result = list(db.data.aggregate(pipeline))
     return jsonify(result)
 
-    # pipeline = [
-    # {   
-    #     "$match": {
-    #         "country" if flag1=="country" else "region": flag2
-    #     } 
-    # },
-    # {
-    #     '$group': {
-    #         '_id': "$country" if flag1=="country" else "$region",
-    #         'num_articles': {'$sum': 1}
-    #     }
-    # },
-    # {
-    #     "$project": {
-    #         "_id": 0,
-    #         "country" if flag1=="country" else "region": '$_id',
-    #         "num_articles": 1
-    #     }
-    # }
-    # ]
-    # result = list(db.data.aggregate(pipeline))
-    # return jsonify(result)
+#most relevance sources for a sector,topic,country
+@app.route('/source/<flag1>/<flag2>')
+def source(flag1,flag2):
+
+    match_field = 'country' if flag1 == "country" else 'sector' if flag1 == "sector" else 'topic' if flag1 == "topic" else 'topic'
+
+    pipeline = [
+    {
+        '$match': {match_field: flag2}
+    },
+    {
+        '$group': {
+            '_id': '$source',
+            'num_articles': {'$sum': 1},
+            'avg_relevance': {'$avg': '$relevance'}
+        }
+    },
+    {
+        '$sort': {
+            'num_articles': -1,
+            'avg_relevance': -1
+        }
+    },
+    {
+        '$limit': 10
+    },
+    {
+        '$project': {
+            '_id': 0,
+            'source': '$_id',
+            'num_articles': 1,
+            'avg_relevance': 1
+        }
+    }
+]
+
+
+
+    result = list(db.data.aggregate(pipeline))
+    sorted_result = sorted(result, key=lambda x: x['avg_relevance'], reverse=True)
+    return jsonify(sorted_result)
+
+#return articles within a sector,source over years
+@app.route('/timeline/<flag1>/<flag2>')
+
+def timeline(flag1,flag2):
+    match_field =   'source' if flag1 == "source" else 'sector'
+    pipeline = [
+    {
+        '$match': {match_field: flag2, 'start_year': {'$exists': True}}
+    },
+    {
+        '$group': {
+            '_id': '$start_year',
+            'num_articles': {'$sum': 1}
+        }
+    },
+    {
+        '$project': {
+            '_id': 0,
+            'start_year': '$_id',
+            'num_articles': 1
+        }
+    },
+    {
+        '$sort': {'start_year': 1}  # Sort by year in ascending order
+    }
+]
+
+    result = list(db.data.aggregate(pipeline))
+    return jsonify(result)
+
+#returning most influential topics in a sector
+@app.route('/sector_topic/<flag1>')
+def sector_topic(flag1):
+
+    SectorName =  flag1
+
+    pipeline = [
+    {
+        '$match': {'sector': SectorName, 'topic': {'$exists': True}}
+    },
+    {
+        '$group': {
+            '_id': '$topic',
+            'count': {'$sum': 1}
+        }
+    },
+    {
+        '$project': {
+            '_id': 0,
+            'topic': '$_id',
+            'count': 1
+        }
+    },
+    {
+        '$sort': {'count': -1}  # Sort by count in descending order
+    }
+
+]
+    result = list(db.data.aggregate(pipeline))
+    return jsonify(result)
+
+
+#No of topics and what they are for a specific source
+@app.route('/no_of_topics/<flag1>')
+
+def no_of_topics(flag1):
+
+    pipeline = [
+    {
+        '$match': {'source': flag1}
+    },
+    {
+        '$group': {
+            '_id': {'source': '$source', 'topic': '$topic'},
+            'count': {'$sum': 1}
+        }
+    },
+    {
+        '$group': {
+            '_id': '$_id.source',
+            'topics': {'$push': {'topic': '$_id.topic', 'count': '$count'}},
+            'total_topics': {'$sum': 1}
+        }
+    },
+    {
+        '$project': {
+            '_id': 0,
+            'source': '$_id',
+            'total_topics': 1,
+            'topics': 1
+        }
+    }
+]
+
+
+    result = list(db.data.aggregate(pipeline))
+    return result
+
+    
+    '''data = db.data.find_one({"end_year": 2022})
+    json_data = json_util.dumps(data)
+    return json.loads(json_data)
+    #return json.loads(json_util.dumps(db.data.find_one({"end_year": 2022})))'''
+
+    
+
+

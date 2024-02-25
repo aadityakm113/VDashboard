@@ -1,11 +1,32 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import * as d3 from 'd3';
 
-const Bar = ({ data, width, height }) => {
+const Bar = ({ width, height }) => {
   const svgRef = useRef();
+  const [bar, setBar] = useState([]);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!data || data.length === 0) return;
+    fetchBar();
+  }, []);
+
+  const fetchBar = async () => {
+    try {
+      const flag = "country"; // Or any other value you want to pass
+      const response = await fetch(`/countries/${flag}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch data');
+      }
+      const jsonData = await response.json();
+      setBar(jsonData);
+    } catch (error) {
+      setError('Failed to fetch data');
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (!bar || bar.length === 0) return;
 
     const svg = d3.select(svgRef.current);
 
@@ -17,12 +38,12 @@ const Bar = ({ data, width, height }) => {
     const innerHeight = height - margin.top - margin.bottom;
 
     const x = d3.scaleBand()
-      .domain(data.map(d => d.name))
+      .domain(bar.map(d => d.country))
       .range([0, innerWidth])
       .padding(0.1);
 
     const y = d3.scaleLinear()
-      .domain([0, d3.max(data, d => d.value)])
+      .domain([0, d3.max(bar, d => d.frequency)])
       .range([innerHeight, 0]);
 
     const xAxis = d3.axisBottom(x);
@@ -37,16 +58,20 @@ const Bar = ({ data, width, height }) => {
       .call(xAxis);
 
     svg.selectAll('.bar')
-      .data(data)
+      .data(bar)
       .enter().append('rect')
       .attr('class', 'bar')
-      .attr('x', d => x(d.name) + margin.left)
-      .attr('y', d => y(d.value) + margin.top)
+      .attr('x', d => x(d.country) + margin.left)
+      .attr('y', d => y(d.frequency) + margin.top)
       .attr('width', x.bandwidth())
-      .attr('height', d => innerHeight - y(d.value));
-  }, [data, width, height]);
+      .attr('height', d => innerHeight - y(d.frequency))
+      .attr('fill', 'steelblue');
+  }, [bar, width, height]);
 
-  return <svg ref={svgRef} width={width} height={height}></svg>;
+  return <svg ref={svgRef} width={width} height={height}>
+    <g className="x-axis" />
+    <g className="y-axis" />
+  </svg>;
 };
 
 export default Bar;

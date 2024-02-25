@@ -2,9 +2,12 @@ import {useState,useEffect, useRef} from 'react';
 import './App.css';
 import Filter from './Components/filter/Filter';
 import WorldMap from './Components/WorldMap';
+import Bar from './Components/Bar';
+import Line from './Components/Line';
 
 function App() {
   const [filter,setFilter] = useState("default");
+  const [scrollPos, setScrollPos] = useState();
 
   function chooseFilter(msg) {
     setFilter(msg);
@@ -22,17 +25,38 @@ function App() {
 
   return (
     <div className="App">
-      {/* <h1>VDashboard</h1>
-      {error ? (
-        <p>Error fetching data: {error}</p>
-      ) : (
-        <p>End Year: {data.end_year}</p>  
-      )} */}
-      <Filter chooseFilter={chooseFilter} className="column-20"></Filter>
-      <div className='column-80'>
-        <WorldMap filter={filter} width={800} height={500}/>
-        <div className='chart'>Chart</div>
-        <div className='chart'>Chart</div>
+      <Filter chooseFilter={chooseFilter} className="column-25"></Filter>
+      <div className='column-75'>
+      <h2>Country</h2>
+        <div className='section'>
+          <div className='chart'>
+            <WorldMap filter={filter} width={400} height={250}/>
+          </div>
+          <div className='chart'>
+          <Bar filter={filter} width={400} height={250}/>
+          </div>
+          <div className='chart'>
+          <Line filter={filter} width={400} height={250}/>
+          </div>
+          <div className='chart'>
+          <Bar filter={filter} width={400} height={250}/>
+          </div>
+        </div>
+        <h2>Sector</h2>
+        <div className='section'>
+          <div className='chart'>
+          <Line filter={filter} width={400} height={250}/>
+          </div>
+          <div className='chart'>
+          <Bar filter={filter} width={400} height={250}/>
+          </div>
+          <div className='chart'>
+          <Line filter={filter} width={400} height={250}/>
+          </div>
+          <div className='chart'>
+          <Bar filter={filter} width={400} height={250}/>
+          </div>
+        </div>
       </div>  
     </div>
   );
