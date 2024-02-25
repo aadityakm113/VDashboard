@@ -1,54 +1,74 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./filter.css";
 
-const Filter = ({chooseFilter}) =>{
-    const [filters, setFilters] = useState({
+const Filter = ({chooseFilter, scroll}) =>{
+      const [open,setOpen] = useState(false);
+      const [filters, setFilters] = useState({
         category: '',
-        price: '',
-        location: ''
+        value: ''
       });
-    
+      const [values, setValues] = useState();
+      const [error, setError] = useState(null);
+
       const handleCategoryChange = (event) => {
         var filter = event.target.value;
         setFilters({ ...filters, category: filter });
         chooseFilter(filter);
       };
     
-      const handlePriceChange = (event) => {
+      const handleValueChange = (event) => {
         setFilters({ ...filters, price: event.target.value });
       };
-    
-      const handleLocationChange = (event) => {
-        setFilters({ ...filters, location: event.target.value });
+
+      useEffect(() => {
+        fetchValues();
+      }, [filters.category]);
+
+      const fetchValues = async () => {
+        try {
+          const flag = filters.category; // Or any other value you want to pass
+          const response = await fetch(`/filter/${flag}`);
+          if (!response.ok) {
+            throw new Error('Failed to fetch data');
+          }
+          const jsonData = await response.json();
+          setValues(jsonData);
+        } catch (error) {
+          setError('Failed to fetch data');
+          console.error('Error fetching data:', error);
+        }
       };
 
     return(
         <div className="filter">
-            <h1>VDashboard</h1>
+            <h2>VDashboard</h2>
             <div className="sidebar-content">
-        <h2>Filters</h2>
+        <h3>Filters</h3>
         <div className="filter-section">
           <label htmlFor="category">Category:</label>
-          <select id="category" value={filters.category} onChange={handleCategoryChange}>
-            <option value="">Select</option>
-            <option value="electronics">Electronics</option>
-            <option value="clothing">Clothing</option>
-            <option value="books">Books</option>
-          </select>
+          <input list="categories" id="category" onChange={handleCategoryChange} value={filters.category} />
+          <datalist id="categories">
+            <option value="Country"></option>
+            <option value="Sector"></option>
+            <option value="Topic"></option>
+          </datalist>
         </div>
         <div className="filter-section">
-          <label htmlFor="price">Price:</label>
-          <select id="price" value={filters.price} onChange={handlePriceChange}>
+          <label htmlFor="value">Value:</label>
+          <input list="values" id="value" onChange={handleValueChange}/>
+          <datalist id="values">
             <option value="">Select</option>
-            <option value="cheap">Cheap</option>
-            <option value="moderate">Moderate</option>
-            <option value="expensive">Expensive</option>
-          </select>
-        </div>
-        <div className="filter-section">
-          <label htmlFor="location">Location:</label>
-          <input type="text" id="location" value={filters.location} onChange={handleLocationChange} />
+                {values && values.map((option, index) => (
+                  <option key={index} value={option[filters.category]}>{option[filters.category]}</option>
+                ))}
+          </datalist>
+          {/* <select id="price" onChange={handleValueChange}>
+            <option value="">Select</option>
+              {values && values.map((option, index) => (
+                <option key={index} value={option[filters.category]}>{option[filters.category]}</option>
+              ))}
+          </select> */}
         </div>
       </div>
         </div>

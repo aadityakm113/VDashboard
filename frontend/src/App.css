@@ -2,19 +2,20 @@
   display: grid;
   height: 100vh;
   align-items: center;
-  grid-template-columns: 25% 75%;
+  grid-template-columns: 20% 80%;
+  background-color: #E0ECEC;
+  font-family: "Inter", sans-serif;
 }
 
-.column-25 {
-  flex: 0 0 25%; /* flex-grow, flex-shrink, flex-basis */
+.column-20 {
+  flex: 0 0 20%; /* flex-grow, flex-shrink, flex-basis */
   height: 100vh;
 }
 
-.column-75 {
-  flex: 0 0 75%;
+.column-80 {
+  flex: 0 0 80%;
   height: 100vh;
   overflow: scroll;
-  background-color: rgb(224, 224, 224);
   padding: 0px 10px 10px 35px;
 }
 
@@ -32,7 +33,7 @@
   align-content: center;
   margin-bottom: 2%;
   flex: 0 0 50%;
-  border: 1px solid #ccc;
+  border: 0px solid #ccc;
   border-radius: 5px;
 }
 

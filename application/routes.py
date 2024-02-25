@@ -53,6 +53,20 @@ def world():
         data = json.load(f)
     return jsonify(data)
 
+@app.route('/filter/<category>')
+def filter(category):
+    group = "$"+category
+    pipeline = [
+        {"$group": {"_id": group}},
+        {"$project": {category: "$_id", "_id": 0}}
+    ]
+    result = list(db.data.aggregate(pipeline))
+    filtered_result = []
+    for r in result:
+        if(r[category]!=""):
+            filtered_result.append(r)
+    return jsonify(filtered_result)
+
 @app.route('/no_of_articles/<flag1>/<flag2>')
 #no of articles in a country or region
 def no_of_articles(flag1,flag2):
