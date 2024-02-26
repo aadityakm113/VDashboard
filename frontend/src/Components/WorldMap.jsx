@@ -70,17 +70,17 @@ const WorldMap = ({ width, height, filter}) => {
         .attr('opacity', 0.7);
 
       // Add labels for countries
-      svg.selectAll('text')
-        .data(world)
-        .enter()
-        .append('text')
-        .attr('x', d => projection([d.longitude, d.latitude])[0])
-        .attr('y', d => projection([d.longitude, d.latitude])[1])
-        .attr('text-anchor', 'middle')
-        .attr('alignment-baseline', 'middle')
-        .attr('fill', 'black')
-        .attr('font-size', '12px') 
-        .text(d => d.country);
+      // svg.selectAll('text')
+      //   .data(world)
+      //   .enter()
+      //   .append('text')
+      //   .attr('x', d => projection([d.longitude, d.latitude])[0])
+      //   .attr('y', d => projection([d.longitude, d.latitude])[1])
+      //   .attr('text-anchor', 'middle')
+      //   .attr('alignment-baseline', 'middle')
+      //   .attr('fill', 'black')
+      //   .attr('font-size', '12px') 
+      //   .text(d => d.country);
     });
   }, [world, width, height]);
 

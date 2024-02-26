@@ -2,7 +2,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import "./filter.css";
 
-const Filter = ({chooseFilter, scroll}) =>{
+const Filter = ({chooseFilter, chooseValue}) =>{
       const [filters, setFilters] = useState({
         category: '',
         value: ''
@@ -17,6 +17,7 @@ const Filter = ({chooseFilter, scroll}) =>{
     
       const handleValueChange = (event) => {
         setFilters({ ...filters, value: event.target.value });
+        chooseValue(event.target.value);
       };
 
       useEffect(() => {
@@ -42,31 +43,26 @@ const Filter = ({chooseFilter, scroll}) =>{
         <div className="filter">
             <h2>VDashboard</h2>
             <div className="sidebar-content">
-        <h3>Filters</h3>
         <div className="filter-section">
-          <label htmlFor="category">Category:</label>
-          <input list="categories" id="category" onChange={handleCategoryChange} value={filters.category} />
-          <datalist id="categories">
-            <option value="Country"></option>
-            <option value="Sector"></option>
-            <option value="Topic"></option>
-          </datalist>
+          <label htmlFor="category">Category</label>
+          {/* <input list="categories" id="category" onChange={handleCategoryChange} value={filters.category} /> */}
+          <select id="categories" onChange={handleCategoryChange}>
+            <option value="select">Select</option>
+            <option value="Country">Country</option>
+            <option value="Region">Region</option>
+            <option value="Sector">Sector</option>
+            <option value="Topic">Topic</option>
+          </select>
         </div>
         <div className="filter-section">
-          <label htmlFor="value">Value:</label>
-          <input list="values" id="value" onChange={handleValueChange} value={filters.value}/>
-          <datalist id="values">
+          <label htmlFor="value">Value</label>
+          {/* <input list="values" id="value" onChange={handleValueChange} value={filters.value}/> */}
+          <select id="values" onChange={handleValueChange}>
             <option value="">Select</option>
                 {values && values.map((option, index) => (
-                  <option key={index} value={option[(filters.category).toLowerCase()]}>{option[(filters.category).toLowerCase()]}</option>
+                  <option key={index} value={option[(filters.category)]}>{option[(filters.category).toLowerCase()]}</option>
                 ))}
-          </datalist>
-          {/* <select id="price" onChange={handleValueChange}>
-            <option value="">Select</option>
-              {values && values.map((option, index) => (
-                <option key={index} value={option[filters.category]}>{option[filters.category]}</option>
-              ))}
-          </select> */}
+          </select>
         </div>
       </div>
         </div>

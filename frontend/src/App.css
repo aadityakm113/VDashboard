@@ -3,7 +3,6 @@
   height: 100vh;
   align-items: center;
   grid-template-columns: 20% 80%;
-  background-color: #E0ECEC;
   font-family: "Inter", sans-serif;
 }
 
@@ -28,6 +27,7 @@
   width: fit-content;
   height: fit-content;
   background-color: white;
+  color: black;
   display: flex;
   flex-wrap: wrap;
   align-content: center;
@@ -35,6 +35,10 @@
   flex: 0 0 50%;
   border: 0px solid #ccc;
   border-radius: 5px;
+}
+
+.about h1{
+  text-align: left !important;
 }
 
 .about{
@@ -49,5 +53,17 @@
   margin-left: 2%;
   border-radius: 25px;
   color: white;
+  text-align: center;
 }
 
+.home{
+  display: inline-block;
+  margin-right: 2%;
+}
+
+.nav{
+  width: 900px;
+  height: fit-content;
+  margin-top: 2%;
+  text-align: right;
+}

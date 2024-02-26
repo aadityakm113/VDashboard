@@ -1,19 +1,19 @@
 import React, { useRef, useEffect, useState } from 'react';
 import * as d3 from 'd3';
 
-const RadarChart = ({ width, height }) => {
+const RadarChart = ({ width, height, filter, value}) => {
   const svgRef = useRef();
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchBar();
-  }, []);
+  }, [value]);
 
   const fetchBar = async () => {
     try {
       const flag = "country"; // Or any other value you want to pass
-      const response = await fetch(`/countries/${flag}`);
+      const response = await fetch(`/influential_pestle/${filter.toLowerCase()}/${value}`);
       if (!response.ok) {
         throw new Error('Failed to fetch data');
       }
@@ -29,6 +29,7 @@ const RadarChart = ({ width, height }) => {
     if (!data || data.length === 0) return;
 
     const svg = d3.select(svgRef.current);
+    svg.selectAll('*').remove();
     const margin = { top: 50, right: 50, bottom: 50, left: 50 };
     const innerWidth = width - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
@@ -41,13 +42,13 @@ const RadarChart = ({ width, height }) => {
 
     // Create scales
     const rScale = d3.scaleLinear()
-      .domain([0, d3.max(data, d => d.country)])
+      .domain([0, d3.max(data, d => d.num_articles)]) // Use num_articles for the radius scale
       .range([0, radius]);
 
     // Create the radar chart paths
     const line = d3.lineRadial()
       .angle((d, i) => i * angleSlice)
-      .radius(d => rScale(d.country))
+      .radius(d => rScale(d.num_articles)) // Adjusted to use num_articles for radius
       .curve(d3.curveLinearClosed);
 
     const radarLine = svg.selectAll('.radarLine')
@@ -58,7 +59,7 @@ const RadarChart = ({ width, height }) => {
     radarLine.append('path')
       .attr('class', 'radarPath')
       .attr('d', d => line(d))
-      .attr('transform', `translate(${centerX},${centerY})`)
+      .attr('transform', `translate(${centerX},${centerY}) rotate(90)`)
       .style('fill', 'none')
       .style('stroke', 'steelblue')
       .style('stroke-width', '2px');
@@ -78,9 +79,16 @@ const RadarChart = ({ width, height }) => {
         .attr('class', 'axisLine')
         .style('stroke', 'gray')
         .style('stroke-width', '1px');
-    }
-  }, [data, width, height]);
 
+        axisGrid.append('text')
+        .attr('x', centerX + Math.cos(angle) * (radius + 10)) // Adjust label position
+        .attr('y', centerY + Math.sin(angle) * (radius + 10)) // Adjust label position
+        .attr('text-anchor', 'middle')
+        .attr('dy', '0.35em')
+        .text(data[i].pestle);
+    }
+
+  }, [data, width, height]);
   return (
     <svg ref={svgRef} width={width} height={height}></svg>
   );

@@ -67,6 +67,45 @@ def filter(category):
             filtered_result.append(r)
     return jsonify(filtered_result)
 
+#most relevance sources overall
+@app.route('/top_sources')
+def top_sources():
+
+    pipeline = [
+    {
+        '$group': {
+            '_id': '$source',
+            'num_articles': {'$sum': 1},
+            'avg_relevance': {'$avg': '$relevance'}
+        }
+    },
+    {
+        '$match': {
+            'num_articles': {'$gt': 10}
+        }
+    },
+    {
+        '$sort': {
+            'num_articles': -1,
+            'avg_relevance': -1
+        }
+    },
+    {
+        '$limit': 5
+    },
+    {
+        '$project': {
+            '_id': 0,
+            'source': '$_id',
+            'num_articles': 1,
+            'avg_relevance': 1
+        }
+    }
+]
+    result = list(db.data.aggregate(pipeline))
+    sorted_result = sorted(result, key=lambda x: x['avg_relevance'], reverse=True)
+    return jsonify(sorted_result)
+
 @app.route('/no_of_articles/<flag1>/<flag2>')
 #no of articles in a country or region
 def no_of_articles(flag1,flag2):
@@ -98,7 +137,7 @@ def no_of_articles(flag1,flag2):
 @app.route('/source/<flag1>/<flag2>')
 def source(flag1,flag2):
 
-    match_field = 'country' if flag1 == "country" else 'sector' if flag1 == "sector" else 'topic' if flag1 == "topic" else 'topic'
+    match_field = 'country' if flag1 == "country" else ('sector' if flag1 == "sector" else ('topic' if flag1 == "topic" else 'region'))
 
     pipeline = [
     {
@@ -129,9 +168,6 @@ def source(flag1,flag2):
         }
     }
 ]
-
-
-
     result = list(db.data.aggregate(pipeline))
     sorted_result = sorted(result, key=lambda x: x['avg_relevance'], reverse=True)
     return jsonify(sorted_result)
@@ -230,9 +266,205 @@ def no_of_topics(flag1):
     }
 ]
 
-
     result = list(db.data.aggregate(pipeline))
     return result
+
+#average relevance of a source
+@app.route('/avg_relevance/<flag1>')
+def avg_relevance(flag1):
+
+    pipeline = [
+        {
+            '$match': {'source': flag1}
+        },
+        {
+            '$group': {
+                '_id': '$source',
+                'avg_relevance': {'$avg': '$relevance'}
+            }
+        },
+        {
+            '$project': {
+                '_id': 0,
+                'source': '$_id',
+                'avg_relevance': 1
+            }
+        }
+    ]
+    result = list(db.data.aggregate(pipeline))
+    return result
+
+#sector distribution for a country or region
+@app.route('/sector_distribution/<flag1>/<flag2>')
+def sector_distribution(flag1,flag2):
+    match_field=flag1
+    pipeline = [
+    {
+        '$match': {match_field: flag2}
+    },
+    {
+        '$group': {
+            '_id': '$sector',
+            'num_articles': {'$sum': 1}
+        }
+    },
+    {
+        '$project': {
+            '_id': 0,
+            'sector': '$_id',
+            'num_articles': 1
+        }
+    }
+]
+    result = list(db.data.aggregate(pipeline))
+    filtered_result = []
+    for r in result:
+        if(r['sector']!=""):
+            filtered_result.append(r)
+    return jsonify(filtered_result)
+
+#Radar chart to visualize multiple dimensions like intensity, likelihood, and relevance for a sector or topic
+
+@app.route('/radar/<flag1>/<flag2>')
+def radar(flag1,flag2):
+
+    match_field=flag1
+
+    pipeline = [
+    {
+        '$match': {match_field : flag2}
+    },
+    {
+        '$project': {
+            '_id': 0,
+            'intensity': 1,
+            'relevance': 1,
+            'likelihood': 1
+        }
+    }
+]
+         
+    result = list(db.data.aggregate(pipeline))
+    return result
+
+#articles for a specific end_year
+@app.route('/end_year/<flag1>')
+def end_year(flag1):
+
+    pipeline = [
+    {
+        '$match': {
+            'end_year': int(flag1)
+        }
+    },
+    {
+        '$project': {
+            '_id': 0,
+            'title': '$title',
+            'url': '$url'
+        }
+    }
+]
+    result = (list(db.data.aggregate(pipeline)))
+    return jsonify(result)
+
+#PEST world map
+@app.route('/pest_world/<flag1>')
+def pest_world(flag1):
+    pipeline = [
+    {
+        '$match': {'pestle': flag1}
+    },
+    {
+        '$group': {
+            '_id': '$country',
+            'count': {'$sum': 1}
+        }
+    },
+    {
+        '$project': {
+            '_id': 0,
+            'country': '$_id',
+            'count': 1
+        }
+    }
+]
+    result = list(db.data.aggregate(pipeline))
+    return result
+
+#PEST top5
+@app.route('/pest_top5/<flag1>')
+def pest_top5(flag1):
+    pipeline = [
+    {
+        '$match': {'pestle': flag1}
+    },
+    {
+        '$group': {
+            '_id': '$country',
+            'count': {'$sum': 1}
+        }
+    },
+    {
+        '$project': {
+            '_id': 0,
+            'country': '$_id',
+            'count': 1
+        }
+    },
+    {
+        '$sort': {'count': -1}
+    },
+    {
+        '$limit': 6
+
+    }
+]
+    result = list(db.data.aggregate(pipeline))
+    return result
+
+@app.route('/influential_pestle/<flag1>/<flag2>')
+def influential_pestle(flag1, flag2):
+    match_field=flag1
+
+    pipeline = [
+        {
+            '$match': {match_field: flag2}
+        },
+        {
+            '$group': {
+                '_id': '$pestle',
+                'num_articles': {'$sum': 1}
+            }
+        },
+        
+        {
+            '$project': {
+                '_id': 0,
+                'pestle': '$_id',
+                'num_articles': 1
+            }
+        },
+        {
+        '$sort': {'num_articles': -1}
+        }
+    ]
+    result = list(db.data.aggregate(pipeline))
+    filtered_result = []
+    for r in result:
+        if r['pestle'] in ["Economic", "Political", "Technological", "Social"]:
+            filtered_result.append(r)
+    
+    pestle_dict = {entry['pestle']: entry['num_articles'] for entry in filtered_result}
+
+    for pestle in ["Economic", "Political", "Technological", "Social"]:
+        if pestle not in pestle_dict:
+            pestle_dict[pestle] = 0 
+
+    filtered_result = [{'pestle': pestle, 'num_articles': pestle_dict[pestle]} for pestle in pestle_dict]
+
+    return jsonify(filtered_result)
+
 
     
     '''data = db.data.find_one({"end_year": 2022})

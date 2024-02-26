@@ -1,19 +1,18 @@
 import React, { useRef, useEffect, useState } from 'react';
 import * as d3 from 'd3';
 
-const PieChart = ({ width, height }) => {
+const PieChart = ({ width, height, filter, value }) => {
   const svgRef = useRef();
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchBar();
-  }, []);
+  }, [value]);
 
   const fetchBar = async () => {
     try {
-      const flag = "country"; // Or any other value you want to pass
-      const response = await fetch(`/countries/${flag}`);
+      const response = await fetch(`/sector_distribution/${filter.toLowerCase()}/${value}`);
       if (!response.ok) {
         throw new Error('Failed to fetch data');
       }
@@ -37,7 +36,7 @@ const PieChart = ({ width, height }) => {
     const radius = Math.min(width, height) / 2;
     const arc = d3.arc().innerRadius(0).outerRadius(radius);
 
-    const pie = d3.pie().value(d => d.frequency); // Corrected typo here
+    const pie = d3.pie().value(d => d.num_articles); // Corrected typo here
 
     const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
 
@@ -65,7 +64,7 @@ const PieChart = ({ width, height }) => {
       .attr('text-anchor', 'middle')
       .attr('font-size', '12px')
       .attr('dy', '1.2em') // Offset vertically to avoid overlap
-      .text(d => d.data.country);
+      .text(d => d.data.sector);
   }, [data, width, height]);
 
   return (
