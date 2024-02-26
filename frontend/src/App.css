@@ -37,3 +37,17 @@
   border-radius: 5px;
 }
 
+.about{
+  width: 800px;
+  height: 300px;
+  background: linear-gradient(#B580E3, #5DC1B9);
+  padding-top: 15px;
+  padding-left: 25px;
+  padding-right: 25px;
+  padding-bottom: 15px;
+  margin-top: 2%;
+  margin-left: 2%;
+  border-radius: 25px;
+  color: white;
+}
+

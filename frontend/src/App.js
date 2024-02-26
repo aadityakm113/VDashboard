@@ -48,6 +48,17 @@ function App() {
     <div className="App">
       <Filter chooseFilter={chooseFilter} scroll={scrollPos} className="column-20"></Filter>
       <div ref={columnRef} className='column-80'>
+        {filter==="default" &&
+          <div className='about'>
+            <h1>VDashboard</h1>
+            <h6>Welcome to your premier destination for insightful charts spanning a myriad of topics across diverse countries. Our platform is designed to provide you with comprehensive visualizations that offer valuable insights into global trends, socio-economic indicators, cultural phenomena etc. Whether you're a researcher, student, policymaker, or simply curious about the world around you, we empower users to explore, understand, and engage with data-driven narratives shaping societies worldwide.</h6>
+            <div className='chart'>
+                <WorldMap filter={filter} width={400} height={250}/>
+              </div>
+          </div>
+          
+          
+        }
         {filter==="Country" &&
         <div>
           <h3>Country</h3>
