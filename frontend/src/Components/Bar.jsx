@@ -13,7 +13,14 @@ const HorizontalBar = ({ width, height, value, filter }) => {
   const fetchBar = async () => {
     try {
       console.log(filter);
-      if(filter){
+      if(filter==="Source"){
+        const response = await fetch(`/source_topics/${value}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch data');
+        }
+        const jsonData = await response.json();
+        setBar(jsonData);
+      } else if(filter){
         const response = await fetch(`/source/${filter.toLowerCase()}/${value}`);
         if (!response.ok) {
           throw new Error('Failed to fetch data');
@@ -39,17 +46,19 @@ const HorizontalBar = ({ width, height, value, filter }) => {
 
     const svg = d3.select(svgRef.current);
 
+    console.log(bar);
+
     svg.selectAll('*').remove();
 
     const margin = { top: 20, right: 20, bottom: 30, left: 40 };
     const innerWidth = width - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
 
-    const y = d3.scaleBand()
-      .domain(bar.map(d => d.source))
+      const y = d3.scaleBand()
+      .domain(bar.map(d => (filter==="Source"?d.topic:d.source)))
       .range([0, innerHeight])
       .padding(0.1);
-
+    
     const x = d3.scaleLinear()
       .domain([0, d3.max(bar, d => d.avg_relevance)])
       .range([0, innerWidth]);

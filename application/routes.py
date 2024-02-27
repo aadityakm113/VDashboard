@@ -53,6 +53,14 @@ def world():
         data = json.load(f)
     return jsonify(data)
 
+@app.route('/total_articles')
+def total():
+    pipeline = [
+        {"$count": "total_articles"}
+    ]
+    result = list(db.data.aggregate(pipeline))
+    return jsonify(result)
+
 @app.route('/filter/<category>')
 def filter(category):
     group = "$"+category
@@ -137,7 +145,11 @@ def no_of_articles(flag1,flag2):
 @app.route('/source/<flag1>/<flag2>')
 def source(flag1,flag2):
 
-    match_field = 'country' if flag1 == "country" else ('sector' if flag1 == "sector" else ('topic' if flag1 == "topic" else 'region'))
+    match_field = 'country' if flag1 == "country" else \
+              ('sector' if flag1 == "sector" else \
+              ('topic' if flag1 == "topic" else \
+              ('region' if flag1 == "region" else 'source')))
+
 
     pipeline = [
     {
@@ -171,6 +183,42 @@ def source(flag1,flag2):
     result = list(db.data.aggregate(pipeline))
     sorted_result = sorted(result, key=lambda x: x['avg_relevance'], reverse=True)
     return jsonify(sorted_result)
+
+@app.route('/source_topics/<flag1>')
+def source_topics(flag1):
+
+    pipeline = [
+        {
+            '$match': {'source': flag1}
+        },
+        {
+            '$group': {
+                '_id': {'source': '$source', 'topic': '$topic'},
+                'avg_relevance': {'$avg': '$relevance'}
+            }
+        },
+        {
+            '$sort': {
+                'avg_relevance': -1
+            }
+        },
+        {
+            '$limit': 10
+        },
+        {
+            '$project': {
+                '_id': 0,
+                'source': '$_id.source',
+                'topic': '$_id.topic',
+                'num_articles': 1,
+                'avg_relevance': 1
+            }
+        }
+    ]
+    result = list(db.data.aggregate(pipeline))
+    sorted_result = sorted(result, key=lambda x: x['avg_relevance'], reverse=True)
+    return jsonify(sorted_result)
+
 
 #return articles within a sector,source over years
 @app.route('/timeline/<flag1>/<flag2>')

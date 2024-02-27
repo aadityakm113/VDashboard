@@ -50,7 +50,9 @@ const Filter = ({chooseFilter, chooseValue}) =>{
             <option value="select">Select</option>
             <option value="Country">Country</option>
             <option value="Region">Region</option>
+            <option value="Source">Source</option>
             <option value="Sector">Sector</option>
+            <option value="pestle">PEST</option>
             <option value="Topic">Topic</option>
           </select>
         </div>
