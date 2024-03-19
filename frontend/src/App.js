@@ -68,7 +68,7 @@ function App() {
           <h3>Country</h3>
             <div className='section'>
             <div className='chart'>
-              <Articles filter={filter} value={value} width={400} height={250}></Articles>
+              <Articles filter={filter} value={value} type={""} width={400} height={250}></Articles>
               </div>
               <div className='chart'>
               <Bar filter={filter} value={value} width={400} height={250}/>

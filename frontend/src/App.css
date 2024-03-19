@@ -18,6 +18,10 @@
   padding: 0px 10px 10px 35px;
 }
 
+.column-80::-webkit-scrollbar {
+  display: none;
+}
+
 .section{
   display: grid;
   grid-template-columns: 50% 50%;
